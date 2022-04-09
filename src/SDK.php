@@ -19,7 +19,7 @@ class SDK
     protected static $instance;
 
     /** @var string Current version. */
-    public static $version = '1.0';
+    protected static $version = '1.0';
 
     /** @var string Path to the SDK directory. */
     public static $dir;
@@ -69,6 +69,16 @@ class SDK
         foreach ($this->components as $component) {
             (new $component)->load();
         }
+    }
+
+    /**
+     * Retrieves the SDK version.
+     *
+     * @return string
+     */
+    public static function getVersion(): string
+    {
+        return static::$version;
     }
 
     /**
