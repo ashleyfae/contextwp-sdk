@@ -9,6 +9,7 @@
 
 namespace ContextWP\Tests;
 
+use Mockery;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
@@ -80,12 +81,22 @@ class TestCase extends \WP_Mock\Tools\TestCase
      * @return void
      * @throws ReflectionException
      */
-    public function setInaccessibleProperty($classInstance, string $propertyName, $propertyValue): void
+    protected function setInaccessibleProperty($classInstance, string $propertyName, $propertyValue): void
     {
         $class = new ReflectionClass($classInstance);
 
         $property = $class->getProperty($propertyName);
         $property->setAccessible(true);
         $property->setValue($classInstance, $propertyValue);
+    }
+
+    /**
+     * @param  string  $className
+     *
+     * @return Mockery\LegacyMockInterface|Mockery\MockInterface|string
+     */
+    protected function mockStatic(string $className)
+    {
+        return Mockery::mock("alias:{$className}");
     }
 }
