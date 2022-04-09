@@ -19,11 +19,16 @@ class ProductTest extends TestCase
      */
     public function testCanConstruct()
     {
-        $product = new Product('my-product');
+        $product = new Product('public-key', 'my-product');
+
+        $this->assertSame(
+            'public-key',
+            $this->getInaccessibleProperty($product, 'publicKey')->getValue($product)
+        );
 
         $this->assertSame(
             'my-product',
-            $this->getInaccessibleProperty($product, 'uuid')->getValue($product)
+            $this->getInaccessibleProperty($product, 'productId')->getValue($product)
         );
     }
 }

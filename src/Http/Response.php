@@ -48,6 +48,13 @@ class Response
         return $this->responseCode >= 200 && $this->responseCode < 300;
     }
 
+    /**
+     * Determines if we have any errors.
+     *
+     * @todo implement
+     *
+     * @return bool
+     */
     public function hasErrors(): bool
     {
 

@@ -14,18 +14,22 @@ use ContextWP\Helpers\Str;
 
 class Product implements Arrayable
 {
+    /** @var string Customer public key */
+    public $publicKey;
+
     /** @var string Product UUID */
-    public $uuid;
+    public $productId;
 
     /** @var null Product version */
     protected $version = null;
 
     /**
-     * @param  string  $uuid  Product UUID.
+     * @param  string  $productId  Product UUID.
      */
-    public function __construct(string $uuid)
+    public function __construct(string $publicKey, string $productId)
     {
-        $this->uuid = $uuid;
+        $this->publicKey = $publicKey;
+        $this->productId = $productId;
     }
 
     /**
@@ -50,7 +54,7 @@ class Product implements Arrayable
     public function toArray(): array
     {
         return [
-            'product_id'      => $this->uuid,
+            'product_id'      => $this->productId,
             'product_version' => $this->version,
         ];
     }

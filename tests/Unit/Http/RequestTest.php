@@ -66,7 +66,7 @@ class RequestTest extends TestCase
     public function setProducts(): void
     {
         $request  = new Request();
-        $products = [new Product('test')];
+        $products = [new Product('public-key', 'test')];
 
         $this->assertNull($this->getInaccessibleProperty($request, 'products')->getValue($request));
 

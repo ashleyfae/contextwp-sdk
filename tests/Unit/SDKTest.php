@@ -60,7 +60,7 @@ class SDKTest extends TestCase
     public function testCanRegister(): void
     {
         $sdk     = new SDK();
-        $product = new Product('123');
+        $product = new Product('public-key','123');
 
         $registry = Mockery::mock(ProductRegistry::class);
         $registry->expects('add')
