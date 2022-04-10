@@ -11,6 +11,7 @@ namespace ContextWP\Repositories;
 
 use Ashleyfae\WPDB\DB;
 use ContextWP\Database\Tables\ProductErrorsTable;
+use ContextWP\ValueObjects\ErrorConsequence;
 use ContextWP\ValueObjects\Product;
 
 class ProductErrorsRepository
@@ -74,13 +75,34 @@ class ProductErrorsRepository
         ));
     }
 
-    public function lockProducts(array $products): void
+    /**
+     * @param  ErrorConsequence[]  $productConsequences
+     *
+     * @return void
+     */
+    public function lockProducts(array $productConsequences): void
     {
-        $lockedUntil = gmdate('Y-m-d H:i:s', '+1 week'); // @todo dynamic reason
         $values = [];
 
-        foreach($products as $product) {
-            $values[] = DB::prepare("%s, %s", $product->product_id, $lockedUntil);
+        foreach ($productConsequences as $product) {
+            $values[] = DB::prepare(
+                "(%s, %d, %s, %s)",
+                $product->productId,
+                (int) $product->isPermanentlyLocked(),
+                $product->getLockedUntil(),
+                $product->responseBody
+            );
         }
+
+        $valueString = implode(', ', $values);
+
+        DB::query(
+            "INSERT INTO {$this->getTableName()} (product_id, permanently_locked, locked_until, response_body)
+                    VALUES {$valueString}
+                    ON DUPLICATE KEY UPDATE
+                        permanently_locked = VALUES(permanently_locked),
+                        locked_until = VALUES(locked_until),
+                        response_body = VALUES(response_body)"
+        );
     }
 }

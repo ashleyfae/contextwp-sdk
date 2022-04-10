@@ -19,6 +19,9 @@ class Response
     /** @var string|null response body */
     public $responseBody;
 
+    /** @var array|null $responseBodyJson json-decoded body */
+    protected $responseBodyJson = null;
+
     public function __construct(int $responseCode, ?string $body = null)
     {
         $this->responseCode = $responseCode;
@@ -67,6 +70,43 @@ class Response
      */
     public function serviceIsUnavailable(): bool
     {
-        return $this->responseCode === 503;
+        return $this->responseCode >= 500 && $this->responseCode < 600;
+    }
+
+    /**
+     * JSON-decodes the response body and returns it.
+     *
+     * @since 1.0
+     *
+     * @return array
+     */
+    protected function getJson(): array
+    {
+        if (! is_null($this->responseBodyJson)) {
+            return $this->responseBodyJson;
+        }
+
+        $this->responseBodyJson = json_decode($this->responseBody, true);
+
+        if (! is_array($this->responseBodyJson)) {
+            $this->responseBodyJson = [];
+        }
+
+        return $this->responseBodyJson;
+    }
+
+    /**
+     * Returns a key from the body.
+     *
+     * @since 1.0
+     *
+     * @param  string  $key  Key to retrieve.
+     * @param  mixed  $default  The value to return if key is not set.
+     *
+     * @return mixed|null
+     */
+    public function jsonKey(string $key, $default = null)
+    {
+        return $this->getJson()[$key] ?? $default;
     }
 }

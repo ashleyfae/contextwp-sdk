@@ -16,6 +16,7 @@ class ErrorConsequence
     const ProductNotFound = 'product_not_found';
     const NoActiveSubscription = 'no_active_subscription';
     const AtCheckInLimit = 'at_subscription_limit';
+    const ValidationError = 'validation_error';
 
     /** @var string $productId ID of the product */
     public $productId;
@@ -23,10 +24,14 @@ class ErrorConsequence
     /** @var string $reason Reason for the error */
     public $reason;
 
-    public function __construct(string $productId, string $reason)
+    /** @var string|null $responseBody API response body */
+    public $responseBody;
+
+    public function __construct(string $productId, string $reason, ?string $responseBody = null)
     {
-        $this->productId = $productId;
-        $this->reason    = $reason;
+        $this->productId    = $productId;
+        $this->reason       = $reason;
+        $this->responseBody = $responseBody;
     }
 
     public function isPermanentlyLocked(): bool

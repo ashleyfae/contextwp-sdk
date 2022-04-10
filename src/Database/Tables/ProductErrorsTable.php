@@ -37,6 +37,7 @@ class ProductErrorsTable extends Table
         product_id varchar(191) NOT NULL,
         permanently_locked tinyint(1) DEFAULT 0,
         locked_until datetime DEFAULT NULL,
+        response_body text DEFAULT NULL,
         PRIMARY KEY (id),
         UNIQUE KEY product_id (product_id),
         KEY permanently_locked_locked_until (permanently_locked, locked_until)

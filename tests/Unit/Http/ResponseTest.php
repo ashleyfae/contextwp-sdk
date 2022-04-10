@@ -11,6 +11,8 @@ namespace ContextWP\Tests\Unit\Http;
 
 use ContextWP\Http\Response;
 use ContextWP\Tests\TestCase;
+use Generator;
+use ReflectionException;
 
 class ResponseTest extends TestCase
 {
@@ -52,7 +54,8 @@ class ResponseTest extends TestCase
         $this->assertSame($expected, $response->isOk());
     }
 
-    public function providerIsOk(): \Generator
+    /** @see testIsOk */
+    public function providerIsOk(): Generator
     {
         yield '200 is ok' => [200, true];
         yield '201 is ok' => [201, true];
@@ -61,5 +64,63 @@ class ResponseTest extends TestCase
         yield '422 not ok' => [422, false];
         yield '500 not ok' => [500, false];
         yield '503 not ok' => [503, false];
+    }
+
+    /**
+     * @covers       \ContextWP\Http\Response::getJson()
+     * @dataProvider providerCanGetJson
+     * @throws ReflectionException
+     */
+    public function testCanGetJson(?string $body, ?array $expected): void
+    {
+        $response = new Response(200, $body);
+
+        $this->assertSame(
+            $expected,
+            $this->invokeInaccessibleMethod($response, 'getJson')
+        );
+    }
+
+    /** @see testCanGetJson */
+    public function providerCanGetJson(): Generator
+    {
+        yield 'null body' => [null, []];
+        yield 'empty body' => ['', []];
+        yield 'body that can be decoded' => [
+            '{"error_code":"missing_auth_header","error_message":"Missing authentication header."}',
+            ['error_code' => 'missing_auth_header', 'error_message' => 'Missing authentication header.'],
+        ];
+        yield 'body that cannot be decoded' => ['body', []];
+    }
+
+    /**
+     * @covers \ContextWP\Http\Response::jsonKey()
+     * @dataProvider providerCanGetJsonKey
+     */
+    public function testCanGetJsonKey(string $key, $default, $expected): void
+    {
+        $response = new Response(200,
+            '{"error_code":"missing_auth_header","error_message":"Missing authentication header."}');
+
+        $this->assertSame(
+            $expected,
+            $response->jsonKey($key, $default)
+        );
+    }
+
+    /** @see testCanGetJsonKey */
+    public function providerCanGetJsonKey(): Generator
+    {
+        yield 'key not set' => [
+            'key'      => 'not-set',
+            'default'  => 'default',
+            'expected' => 'default',
+        ];
+
+        yield 'key is set' => [
+            'key'      => 'error_code',
+            'default'  => '123',
+            'expected' => 'missing_auth_header',
+        ];
     }
 }
