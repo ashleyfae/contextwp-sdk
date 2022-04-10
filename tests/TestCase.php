@@ -97,6 +97,6 @@ class TestCase extends \WP_Mock\Tools\TestCase
      */
     protected function mockStatic(string $className)
     {
-        return Mockery::mock("alias:{$className}");
+        return Mockery::mock("overload:{$className}");
     }
 }

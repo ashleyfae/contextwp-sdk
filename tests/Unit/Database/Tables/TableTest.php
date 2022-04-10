@@ -13,7 +13,6 @@ use ContextWP\Database\DB;
 use ContextWP\Database\Tables\Table;
 use ContextWP\Tests\TestCase;
 use Generator;
-use Mockery\MockInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionException;
 use WP_Mock;
@@ -64,9 +63,8 @@ class TableTest extends TestCase
             ->method('getVersion')
             ->willReturn(4567);
 
-        /** @var DB&MockInterface $db */
-        $db = $this->mockStatic(DB::class);
-        $db->shouldReceive('delta')
+        $this->mockStatic(DB::class)
+            ->shouldReceive('delta')
             ->with('contextwp_table', 'schema')
             ->andReturnNull();
 
@@ -84,14 +82,13 @@ class TableTest extends TestCase
             ->method('getTableName')
             ->willReturn('contextwp_table');
 
-        /** @var DB&MockInterface $db */
-        $db = $this->mockStatic(DB::class);
-
-        $db->shouldReceive('applyPrefix')
+        $this->mockStatic(DB::class)
+            ->shouldReceive('applyPrefix')
             ->with('contextwp_table')
             ->andReturn('wp_contextwp_table');
 
-        $db->shouldReceive('query')
+        $this->mockStatic(DB::class)
+            ->shouldReceive('query')
             ->with('DROP TABLE IF EXISTS wp_contextwp_table')
             ->andReturnNull();
     }
