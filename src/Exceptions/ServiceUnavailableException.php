@@ -4,7 +4,7 @@
  *
  * @package   contextwp-sdk
  * @copyright Copyright (c) 2022, Ashley Gibson
- * @license   GPL2+
+ * @license   MIT
  */
 
 namespace ContextWP\Exceptions;
