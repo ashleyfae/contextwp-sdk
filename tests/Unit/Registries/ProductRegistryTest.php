@@ -9,6 +9,7 @@
 
 namespace ContextWP\Tests\Unit\Registries;
 
+use ContextWP\Exceptions\InvalidProductException;
 use ContextWP\Registries\ProductRegistry;
 use ContextWP\Tests\TestCase;
 use ContextWP\ValueObjects\Product;
@@ -17,18 +18,44 @@ use ReflectionException;
 class ProductRegistryTest extends TestCase
 {
     /**
-     * @covers \ContextWP\Registries\ProductRegistry::add()
+     * @covers       \ContextWP\Registries\ProductRegistry::add()
+     * @dataProvider providerCanAddProduct
+     * @throws InvalidProductException
      */
-    public function testAddProduct(): void
+    public function testAddProduct(?string $expectedException): void
     {
-        $registry = new ProductRegistry();
-        $product  = new Product('public-key', 'my-product');
+        $registry = $this->createPartialMock(ProductRegistry::class, ['validateProduct']);
+
+        $product = new Product('public-key', 'my-product');
+
+        if ($expectedException) {
+            $registry->expects($this->once())
+                ->method('validateProduct')
+                ->with($product)
+                ->willThrowException(new $expectedException);
+        } else {
+            $registry->expects($this->once())
+                ->method('validateProduct')
+                ->with($product)
+                ->willReturn(null);
+        }
+
+        if (! empty($expectedException)) {
+            $this->expectException($expectedException);
+        }
+
         $registry->add($product);
 
         $this->assertSame(
             ['public-key' => [$product]],
             $registry->getProducts()
         );
+    }
+
+    public function providerCanAddProduct(): \Generator
+    {
+        yield 'valid product' => [null];
+        yield 'fails validation' => [InvalidProductException::class];
     }
 
     /**

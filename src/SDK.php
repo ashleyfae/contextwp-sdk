@@ -87,6 +87,7 @@ class SDK
      * @param  Product  $product
      *
      * @return $this
+     * @throws Exceptions\InvalidProductException
      */
     public function register(Product $product): SDK
     {

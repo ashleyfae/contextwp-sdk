@@ -19,7 +19,10 @@ class ResponseTest extends TestCase
      */
     public function testCanConstruct(): void
     {
-        $this->markTestIncomplete();
+        $response = new Response(201, 'body');
+
+        $this->assertSame(201, $response->responseCode);
+        $this->assertSame('body', $response->responseBody);
     }
 
     /**
