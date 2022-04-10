@@ -4,8 +4,40 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d32eeca856b2d18aaa82f58b08a04897",
-    "packages": [],
+    "content-hash": "93e9ce53de4076fa2931b1d5b50c3f9c",
+    "packages": [
+        {
+            "name": "ashleyfae/wp-db",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ashleyfae/wp-db.git",
+                "reference": "346622ffa5efd62313bd74e5dc8d02ee6841556c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ashleyfae/wp-db/zipball/346622ffa5efd62313bd74e5dc8d02ee6841556c",
+                "reference": "346622ffa5efd62313bd74e5dc8d02ee6841556c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ashleyfae\\WPDB\\": "src/"
+                }
+            },
+            "description": "Wrapper for wpdb.",
+            "support": {
+                "source": "https://github.com/ashleyfae/wp-db/tree/main",
+                "issues": "https://github.com/ashleyfae/wp-db/issues"
+            },
+            "time": "2022-04-10T11:38:38+00:00"
+        }
+    ],
     "packages-dev": [
         {
             "name": "10up/wp_mock",
@@ -2338,7 +2370,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "ashleyfae/wp-db": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

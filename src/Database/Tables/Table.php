@@ -9,8 +9,8 @@
 
 namespace ContextWP\Database\Tables;
 
+use Ashleyfae\WPDB\DB;
 use ContextWP\Contracts\DatabaseTable;
-use ContextWP\Database\DB;
 
 abstract class Table implements DatabaseTable
 {
@@ -19,10 +19,10 @@ abstract class Table implements DatabaseTable
      */
     public function exists(): bool
     {
-        return (bool) DB::getInstance()->get_var(
-            DB::getInstance()->prepare(
+        return (bool) DB::get_var(
+            DB::prepare(
                 "SHOW TABLES LIKE %s",
-                DB::getInstance()->esc_like(DB::applyPrefix($this->getTableName()))
+                DB::esc_like(DB::applyPrefix($this->getTableName()))
             )
         );
     }
@@ -32,9 +32,16 @@ abstract class Table implements DatabaseTable
      */
     public function updateOrCreate(): void
     {
+        if (file_exists(ABSPATH.'wp-admin/includes/upgrade.php')) {
+            require_once ABSPATH.'wp-admin/includes/upgrade.php';
+        }
+
+        $tableName = DB::applyPrefix($this->getTableName());
+        $charset   = DB::getInstance()->charset;
+        $collate   = DB::getInstance()->collate;
+
         DB::delta(
-            $this->getTableName(),
-            $this->getSchema()
+            "CREATE TABLE {$tableName} ({$this->getSchema()}) DEFAULT CHARACTER SET {$charset} COLLATE {$collate};"
         );
 
         $this->setDbVersion($this->getVersion());

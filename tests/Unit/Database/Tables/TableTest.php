@@ -9,7 +9,7 @@
 
 namespace ContextWP\Tests\Unit\Database\Tables;
 
-use ContextWP\Database\DB;
+use Ashleyfae\WPDB\DB;
 use ContextWP\Database\Tables\Table;
 use ContextWP\Tests\TestCase;
 use Generator;
@@ -63,9 +63,23 @@ class TableTest extends TestCase
             ->method('getVersion')
             ->willReturn(4567);
 
-        $this->mockStatic(DB::class)
-            ->shouldReceive('delta')
-            ->with('contextwp_table', 'schema')
+        $db = $this->mockStatic(DB::class);
+
+        $db->shouldReceive('applyPrefix')
+            ->once()
+            ->andReturnArg(0);
+
+        $wpdb          = new \stdClass();
+        $wpdb->charset = 'utf8mb4';
+        $wpdb->collate = 'utf8mb4_unicode_520_ci';
+        $db->shouldReceive('getInstance')
+            ->twice()
+            ->andReturn($wpdb);
+
+        $db->shouldReceive('delta')
+            ->with(
+                "CREATE TABLE contextwp_table (schema) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;"
+            )
             ->andReturnNull();
 
         $table->updateOrCreate();
@@ -82,13 +96,13 @@ class TableTest extends TestCase
             ->method('getTableName')
             ->willReturn('contextwp_table');
 
-        $this->mockStatic(DB::class)
-            ->shouldReceive('applyPrefix')
+        $db = $this->mockStatic(DB::class);
+
+        $db->shouldReceive('applyPrefix')
             ->with('contextwp_table')
             ->andReturn('wp_contextwp_table');
 
-        $this->mockStatic(DB::class)
-            ->shouldReceive('query')
+        $db->shouldReceive('query')
             ->with('DROP TABLE IF EXISTS wp_contextwp_table')
             ->andReturnNull();
     }
