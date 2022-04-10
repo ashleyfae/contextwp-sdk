@@ -9,7 +9,59 @@
 
 namespace ContextWP\Repositories;
 
+use Ashleyfae\WPDB\DB;
+use ContextWP\Database\Tables\ProductErrorsTable;
+
 class ProductErrorsRepository
 {
+    /** @var ProductErrorsTable $productErrorsTable */
+    protected $productErrorsTable;
 
+    /** @var string $tableName Table name with prefix applied. */
+    protected $tableName;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->productErrorsTable = new ProductErrorsTable();
+        $this->tableName          = DB::applyPrefix($this->productErrorsTable->getTableName());
+    }
+
+    /**
+     * Returns the current time.
+     *
+     * @return string
+     */
+    protected function getNow(): string
+    {
+        return gmdate('Y-m-d H:i:s');
+    }
+
+    /**
+     * Deletes expired error records.
+     *
+     * @since 1.0
+     */
+    public function deleteExpiredErrors(): void
+    {
+        DB::query(DB::prepare(
+            "DELETE FROM {$this->tableName} WHERE locked_until < %s",
+            $this->getNow()
+        ));
+    }
+
+    /**
+     * Returns the IDs of products that are currently locked.
+     *
+     * @return array
+     */
+    public function getLockedProductIds(): array
+    {
+        return DB::get_col(DB::prepare(
+            "SELECT product_id FROM {$this->tableName} WHERE permanently_locked = 0 AND locked_until <= %s",
+            $this->getNow()
+        ));
+    }
 }
