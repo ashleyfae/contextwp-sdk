@@ -42,10 +42,10 @@ class HandleResponseErrors
 
         if ($code = $response->jsonKey('error_code')) {
             $this->addConsequenceCodeForAll($code, $products);
-        } elseif ($response->jsonKey('message') && $response->jsonKey('errors')) {
+        } elseif ($response->jsonKey('errors')) {
             $this->addConsequenceCodeForAll(ErrorConsequence::ValidationError, $products);
-        } elseif (! is_null($response->jsonKey('accepted')) && $errors = $response->jsonKey('errors')) {
-            $this->addIndividualProductConsequences($errors);
+        } elseif ($rejected = $response->jsonKey('rejected')) {
+            $this->addIndividualProductConsequences($rejected);
         }
     }
 
@@ -73,12 +73,12 @@ class HandleResponseErrors
      *
      * @since 1.0
      *
-     * @param  array  $errors
+     * @param  array  $rejected
      */
-    protected function addIndividualProductConsequences(array $errors): void
+    protected function addIndividualProductConsequences(array $rejected): void
     {
         $consequences = [];
-        foreach ($errors as $productId => $errorCode) {
+        foreach ($rejected as $productId => $errorCode) {
             $consequences[] = new ErrorConsequence(
                 $productId,
                 $errorCode,

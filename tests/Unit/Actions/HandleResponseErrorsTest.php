@@ -44,7 +44,7 @@ class HandleResponseErrorsTest extends TestCase
 
         $handler->expects($sameConsequenceForAll ? $this->never() : $this->once())
             ->method('addIndividualProductConsequences')
-            ->with($response->jsonKey('errors'))
+            ->with($response->jsonKey('rejected'))
             ->willReturn(null);
 
         $handler->execute($response, $products);
@@ -66,7 +66,7 @@ class HandleResponseErrorsTest extends TestCase
         ];
 
         yield 'individual product not found error' => [
-            '{"accepted":[],"errors":{"4f9c853d-1baf-4c2f-96cb-1f464ea3680f":"product_not_found"}}',
+            '{"accepted":[],"rejected":{"4f9c853d-1baf-4c2f-96cb-1f464ea3680f":"product_not_found"}}',
             false,
             'product_not_found',
         ];
