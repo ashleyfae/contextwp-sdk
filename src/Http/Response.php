@@ -59,4 +59,14 @@ class Response
     {
 
     }
+
+    /**
+     * If the service is unavailable (meaning subsequent API requests should be cancelled).
+     *
+     * @return bool
+     */
+    public function serviceIsUnavailable(): bool
+    {
+        return $this->responseCode === 503;
+    }
 }

@@ -9,6 +9,7 @@
 
 namespace ContextWP\Tests\Unit\Http;
 
+use ContextWP\Exceptions\MissingPublicKeyException;
 use ContextWP\Http\Request;
 use ContextWP\Http\Response;
 use ContextWP\Tests\TestCase;
@@ -37,6 +38,24 @@ class RequestTest extends TestCase
         $this->assertSame(
             'contextwp.com',
             $this->getInaccessibleProperty($request, 'url')->getValue($request)
+        );
+    }
+
+    /**
+     * @covers \ContextWP\Http\Request::setPublicKey()
+     * @throws ReflectionException
+     */
+    public function testCanSetPublicKey(): void
+    {
+        $request = new Request();
+
+        $this->assertNull($this->getInaccessibleProperty($request, 'publicKey')->getValue($request));
+
+        $request->setPublicKey('public-key');
+
+        $this->assertSame(
+            'public-key',
+            $this->getInaccessibleProperty($request, 'publicKey')->getValue($request)
         );
     }
 
@@ -114,18 +133,37 @@ class RequestTest extends TestCase
     }
 
     /**
-     * @covers \ContextWP\Http\Request::makeHeaders()
+     * @covers       \ContextWP\Http\Request::makeHeaders()
+     * @dataProvider providerCanMakePublicKey
      * @throws ReflectionException
      */
-    public function testCanMakeHeaders(): void
+    public function testCanMakeHeaders(?string $publicKey, ?string $expectedException = null): void
     {
+        $request = new Request();
+
+        if (! is_null($publicKey)) {
+            $this->setInaccessibleProperty($request, 'publicKey', $publicKey);
+        }
+
+        if (! empty($expectedException)) {
+            $this->expectException($expectedException);
+        }
+
         $this->assertSame(
             [
                 'Accept'       => 'application/json',
                 'Content-Type' => 'application/json',
+                'Public-Key'   => $publicKey,
             ],
-            $this->invokeInaccessibleMethod(new Request(), 'makeHeaders')
+            $this->invokeInaccessibleMethod($request, 'makeHeaders')
         );
+    }
+
+    /** @see testCanMakeHeaders */
+    public function providerCanMakePublicKey(): Generator
+    {
+        yield 'has public key' => ['public-key-123'];
+        yield 'no public key' => [null, MissingPublicKeyException::class];
     }
 
     /**

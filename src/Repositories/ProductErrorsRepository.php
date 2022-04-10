@@ -11,14 +11,12 @@ namespace ContextWP\Repositories;
 
 use Ashleyfae\WPDB\DB;
 use ContextWP\Database\Tables\ProductErrorsTable;
+use ContextWP\ValueObjects\Product;
 
 class ProductErrorsRepository
 {
     /** @var ProductErrorsTable $productErrorsTable */
     protected $productErrorsTable;
-
-    /** @var string $tableName Table name with prefix applied. */
-    protected $tableName;
 
     /**
      * Constructor
@@ -26,7 +24,18 @@ class ProductErrorsRepository
     public function __construct()
     {
         $this->productErrorsTable = new ProductErrorsTable();
-        $this->tableName          = DB::applyPrefix($this->productErrorsTable->getTableName());
+    }
+
+    /**
+     * Returns the name of the table.
+     *
+     * @since 1.0
+     *
+     * @return string
+     */
+    protected function getTableName(): string
+    {
+        return DB::applyPrefix($this->productErrorsTable->getTableName());
     }
 
     /**
@@ -47,7 +56,7 @@ class ProductErrorsRepository
     public function deleteExpiredErrors(): void
     {
         DB::query(DB::prepare(
-            "DELETE FROM {$this->tableName} WHERE locked_until < %s",
+            "DELETE FROM {$this->getTableName()} WHERE locked_until < %s",
             $this->getNow()
         ));
     }
@@ -60,8 +69,18 @@ class ProductErrorsRepository
     public function getLockedProductIds(): array
     {
         return DB::get_col(DB::prepare(
-            "SELECT product_id FROM {$this->tableName} WHERE permanently_locked = 0 AND locked_until <= %s",
+            "SELECT product_id FROM {$this->getTableName()} WHERE permanently_locked = 0 AND locked_until <= %s",
             $this->getNow()
         ));
+    }
+
+    public function lockProducts(array $products): void
+    {
+        $lockedUntil = gmdate('Y-m-d H:i:s', '+1 week'); // @todo dynamic reason
+        $values = [];
+
+        foreach($products as $product) {
+            $values[] = DB::prepare("%s, %s", $product->product_id, $lockedUntil);
+        }
     }
 }

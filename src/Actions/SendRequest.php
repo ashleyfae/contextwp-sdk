@@ -9,8 +9,10 @@
 
 namespace ContextWP\Actions;
 
+use ContextWP\Exceptions\MissingPublicKeyException;
 use ContextWP\Http\Request;
 use ContextWP\Http\Response;
+use ContextWP\Traits\Makeable;
 use ContextWP\ValueObjects\Environment;
 use Exception;
 
@@ -19,18 +21,22 @@ use Exception;
  */
 class SendRequest
 {
+    use Makeable;
+
     /**
      * Sends the check-in request.
      *
+     * @param  string  $publicKey
      * @param  array  $products
      *
      * @return Response
-     * @throws Exception
+     * @throws Exception|MissingPublicKeyException
      */
-    public function execute(array $products): Response
+    public function execute(string $publicKey, array $products): Response
     {
         return Request::make()
             ->setUrl($this->getApiUrl())
+            ->setPublicKey($publicKey)
             ->setEnvironment(Environment::make())
             ->setProducts($products)
             ->execute();

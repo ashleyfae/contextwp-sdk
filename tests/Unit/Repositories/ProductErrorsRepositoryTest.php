@@ -23,8 +23,11 @@ class ProductErrorsRepositoryTest extends TestCase
      */
     public function testCanDeleteExpiredErrors(): void
     {
-        $repository = $this->createPartialMock(ProductErrorsRepository::class, ['getNow']);
-        $this->setInaccessibleProperty($repository, 'tableName', 'wp_contextwp_table');
+        $repository = $this->createPartialMock(ProductErrorsRepository::class, ['getNow', 'getTableName']);
+
+        $repository->expects($this->once())
+            ->method('getTableName')
+            ->willReturn('wp_contextwp_table');
 
         $repository->expects($this->once())
             ->method('getNow')
@@ -54,8 +57,11 @@ class ProductErrorsRepositoryTest extends TestCase
      */
     public function testCanGetProductIdsWithErrors(): void
     {
-        $repository = $this->createPartialMock(ProductErrorsRepository::class, ['getNow']);
-        $this->setInaccessibleProperty($repository, 'tableName', 'wp_contextwp_table');
+        $repository = $this->createPartialMock(ProductErrorsRepository::class, ['getNow', 'getTableName']);
+
+        $repository->expects($this->once())
+            ->method('getTableName')
+            ->willReturn('wp_contextwp_table');
 
         $repository->expects($this->once())
             ->method('getNow')

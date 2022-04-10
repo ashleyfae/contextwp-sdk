@@ -9,6 +9,7 @@
 
 namespace ContextWP\Http;
 
+use ContextWP\Exceptions\MissingPublicKeyException;
 use ContextWP\Traits\Makeable;
 use ContextWP\ValueObjects\Environment;
 use ContextWP\ValueObjects\Product;
@@ -25,6 +26,9 @@ class Request
 
     /** @var string URL to make the request to */
     protected $url;
+
+    /** @var string $publicKey customer's public key */
+    protected $publicKey;
 
     /** @var Environment site environment */
     protected $environment;
@@ -44,6 +48,22 @@ class Request
     public function setUrl(string $url): Request
     {
         $this->url = $url;
+
+        return $this;
+    }
+
+    /**
+     * Sets the public key.
+     *
+     * @since 1.0
+     *
+     * @param  string  $publicKey
+     *
+     * @return $this
+     */
+    public function setPublicKey(string $publicKey): Request
+    {
+        $this->publicKey = $publicKey;
 
         return $this;
     }
@@ -105,12 +125,18 @@ class Request
      * @since 1.0
      *
      * @return string[]
+     * @throws MissingPublicKeyException
      */
     protected function makeHeaders(): array
     {
+        if (empty($this->publicKey)) {
+            throw new MissingPublicKeyException();
+        }
+
         return [
             'Accept'       => 'application/json',
             'Content-Type' => 'application/json',
+            'Public-Key'   => $this->publicKey,
         ];
     }
 
