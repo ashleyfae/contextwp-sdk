@@ -9,6 +9,7 @@
 
 namespace ContextWP\Registries;
 
+use ContextWP\Traits\Singleton;
 use ContextWP\ValueObjects\Product;
 
 /**
@@ -18,6 +19,8 @@ use ContextWP\ValueObjects\Product;
  */
 class ProductRegistry
 {
+    use Singleton;
+
     /** @var array All products, grouped by public key */
     protected $products = [];
 
