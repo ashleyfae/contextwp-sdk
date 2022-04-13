@@ -60,7 +60,7 @@ class Response
     {
         return $this->jsonExists('error_code') ||
             $this->jsonExists('errors') ||
-            $this->jsonExists('rejected');
+            ! empty($this->jsonKey('rejected'));
     }
 
     /**
@@ -110,6 +110,15 @@ class Response
         return $this->getJson()[$key] ?? $default;
     }
 
+    /**
+     * Determines if the supplied key exists in the JSON body.
+     *
+     * @since 1.0
+     *
+     * @param  string  $key
+     *
+     * @return bool
+     */
     public function jsonExists(string $key): bool
     {
         return array_key_exists($key, $this->getJson());
