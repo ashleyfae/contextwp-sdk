@@ -50,8 +50,25 @@ class HandleResponseErrors
     }
 
     /**
+     * Creates an ErrorConsequence object for a given product ID and error code.
+     *
+     * @since 1.0
+     *
+     * @param  string  $productId
+     * @param  string  $errorCode
+     *
+     * @return ErrorConsequence
+     */
+    protected function makeConsequence(string $productId, string $errorCode): ErrorConsequence
+    {
+        return new ErrorConsequence($productId, $errorCode, Str::sanitize($this->response->responseBody));
+    }
+
+    /**
      * Adds the same consequence code for all products. This is called when the _entire_ request fails
      * and all products are affected.
+     *
+     * @todo Reduce duplication with {@see HandleResponseErrors::addIndividualProductConsequences()}
      *
      * @since 1.0
      *
@@ -61,7 +78,7 @@ class HandleResponseErrors
     protected function addConsequenceCodeForAll(string $errorCode, array $products): void
     {
         $consequences = array_map(function (Product $product) use ($errorCode) {
-            return new ErrorConsequence($product->productId, $errorCode, Str::sanitize($this->response->responseBody));
+            return $this->makeConsequence($product->productId, $errorCode);
         }, $products);
 
         $this->productErrorsRepository->lockProducts($consequences);
@@ -71,6 +88,8 @@ class HandleResponseErrors
      * Adds consequences for the products included in the errors array. This is called when only specific
      * products fail but the overall request succeeded.
      *
+     * @todo Reduce duplication with {@see HandleResponseErrors::addConsequenceCodeForAll()}
+     *
      * @since 1.0
      *
      * @param  array  $rejected
@@ -79,11 +98,7 @@ class HandleResponseErrors
     {
         $consequences = [];
         foreach ($rejected as $productId => $errorCode) {
-            $consequences[] = new ErrorConsequence(
-                $productId,
-                $errorCode,
-                Str::sanitize($this->response->responseCode)
-            );
+            $consequences[] = $this->makeConsequence($productId, $errorCode);
         }
 
         $this->productErrorsRepository->lockProducts($consequences);

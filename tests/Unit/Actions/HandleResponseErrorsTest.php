@@ -16,6 +16,7 @@ use ContextWP\Tests\TestCase;
 use ContextWP\ValueObjects\ErrorConsequence;
 use ContextWP\ValueObjects\Product;
 use Generator;
+use Mockery;
 use ReflectionException;
 
 class HandleResponseErrorsTest extends TestCase
@@ -73,11 +74,57 @@ class HandleResponseErrorsTest extends TestCase
     }
 
     /**
+     * @covers \ContextWP\Actions\HandleResponseErrors::makeConsequence()
+     * @throws ReflectionException
+     */
+    public function testMakeConsequence(): void
+    {
+        $handler = new HandleResponseErrors();
+        $this->setInaccessibleProperty($handler, 'response', new Response(200, 'response-body'));
+
+        /** @var ErrorConsequence $consequence */
+        $consequence = $this->invokeInaccessibleMethod(
+            $handler,
+            'makeConsequence',
+            'pid',
+            'error_code'
+        );
+
+        $this->assertInstanceOf(ErrorConsequence::class, $consequence);
+        $this->assertSame('pid', $consequence->productId);
+        $this->assertSame('error_code', $consequence->reason);
+        $this->assertSame('response-body', $consequence->responseBody);
+    }
+
+    protected function mockProductErrorsRepo(HandleResponseErrors $handler, array $expectedConsequences): void
+    {
+        $mockRepo = Mockery::mock(ProductErrorsRepository::class);
+        $mockRepo->expects('lockProducts')
+            ->once()
+            ->with($expectedConsequences);
+
+        $this->setInaccessibleProperty($handler, 'productErrorsRepository', $mockRepo);
+    }
+
+    /**
      * @covers \ContextWP\Actions\HandleResponseErrors::addConsequenceCodeForAll()
      */
     public function testCanAddConsequenceCodeForAll(): void
     {
-        $this->markTestIncomplete();
+        $handler = $this->createPartialMock(HandleResponseErrors::class, ['makeConsequence']);
+        $product = new Product('pk', 'pid');
+
+        $consequence = new ErrorConsequence('pid', 'error-code');
+        $handler->expects($this->once())
+            ->method('makeConsequence')
+            ->with('pid', 'error-code')
+            ->willReturn($consequence);
+
+        $this->mockProductErrorsRepo($handler, [$consequence]);
+
+        $this->invokeInaccessibleMethod($handler, 'addConsequenceCodeForAll', 'error-code', [$product]);
+
+        $this->assertConditionsMet();
     }
 
     /**
@@ -85,6 +132,18 @@ class HandleResponseErrorsTest extends TestCase
      */
     public function testCanAddProductConsequences(): void
     {
-        $this->markTestIncomplete();
+        $handler = $this->createPartialMock(HandleResponseErrors::class, ['makeConsequence']);
+
+        $consequence = new ErrorConsequence('pid', 'error-code');
+        $handler->expects($this->once())
+            ->method('makeConsequence')
+            ->with('pid', 'error-code')
+            ->willReturn($consequence);
+
+        $this->mockProductErrorsRepo($handler, [$consequence]);
+
+        $this->invokeInaccessibleMethod($handler, 'addIndividualProductConsequences', ['pid' => 'error-code']);
+
+        $this->assertConditionsMet();
     }
 }
