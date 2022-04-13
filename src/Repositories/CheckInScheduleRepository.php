@@ -14,13 +14,13 @@ class CheckInScheduleRepository
     const OPTION_NAME = 'contextwp_next_checkin';
 
     /**
-     * Updates the check-in timestamp.
+     * Sets the check-in timestamp.
      *
      * @since 1.0
      *
      * @param  int  $timestamp
      */
-    public function update(int $timestamp): void
+    public function set(int $timestamp): void
     {
         update_option(static::OPTION_NAME, $timestamp, false);
     }

@@ -17,7 +17,7 @@ use WP_Mock;
 class CheckInScheduleRepositoryTest extends TestCase
 {
     /**
-     * @covers \ContextWP\Repositories\CheckInScheduleRepository::update()
+     * @covers \ContextWP\Repositories\CheckInScheduleRepository::set()
      */
     public function testUpdate(): void
     {
@@ -25,7 +25,7 @@ class CheckInScheduleRepositoryTest extends TestCase
             ->with('contextwp_next_checkin', 123, false)
             ->andReturnNull();
 
-        (new CheckInScheduleRepository())->update(123);
+        (new CheckInScheduleRepository())->set(123);
 
         $this->assertConditionsMet();
     }
