@@ -10,8 +10,10 @@
 namespace ContextWP\Tests\Unit\Cli;
 
 use ContextWP\Cli\CliProvider;
+use ContextWP\Cli\Commands\SendCheckInsCommand;
 use ContextWP\Tests\TestCase;
 use Generator;
+use Mockery;
 
 class CliProviderTest extends TestCase
 {
@@ -41,5 +43,39 @@ class CliProviderTest extends TestCase
     {
         yield 'should load' => [true];
         yield 'do not load' => [false];
+    }
+
+    /**
+     * @covers \ContextWP\Cli\CliProvider::registerCommands()
+     */
+    public function testCanRegisterCommands(): void
+    {
+        $provider = $this->createPartialMock(CliProvider::class, ['registerCommand']);
+        $this->setInaccessibleProperty($provider, 'commands', ['Command1', 'Command2', 'Command3']);
+
+        $provider->expects($this->exactly(3))
+            ->method('registerCommand')
+            ->withConsecutive(['Command1'], ['Command2'], ['Command3'])
+            ->willReturnOnConsecutiveCalls(null, null, null);
+
+        $this->invokeInaccessibleMethod($provider, 'registerCommands');
+
+        $this->assertConditionsMet();
+    }
+
+    /**
+     * @covers \ContextWP\Cli\CliProvider::registerCommand()
+     */
+    public function testCanRegisterCommand(): void
+    {
+        $wpCli = Mockery::mock('alias:WP_CLI');
+        $wpCli->expects('add_command')
+            ->once()
+            ->with('contextwp checkin', SendCheckInsCommand::class)
+            ->andReturnNull();
+
+        $this->invokeInaccessibleMethod(new CliProvider(), 'registerCommand', SendCheckInsCommand::class);
+
+        $this->assertConditionsMet();
     }
 }
