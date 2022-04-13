@@ -10,6 +10,7 @@
 namespace ContextWP;
 
 use ContextWP\Actions\HandleCronEvent;
+use ContextWP\Cli\CliProvider;
 use ContextWP\Database\TableManager;
 use ContextWP\Registries\ProductRegistry;
 use ContextWP\ValueObjects\Product;
@@ -32,6 +33,7 @@ class SDK
     protected $components = [
         TableManager::class,
         HandleCronEvent::class,
+        CliProvider::class,
     ];
 
     /**
