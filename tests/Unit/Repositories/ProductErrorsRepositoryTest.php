@@ -33,9 +33,7 @@ class ProductErrorsRepositoryTest extends TestCase
             ->method('getNow')
             ->willReturn('2022-04-10 12:57:00');
 
-        $dbMock = $this->mockStatic(DB::class);
-
-        $dbMock->shouldReceive('prepare')
+        $this->mockStaticMethod(DB::class, 'prepare')
             ->once()
             ->with(
                 "DELETE FROM wp_contextwp_table WHERE locked_until < %s",
@@ -43,9 +41,9 @@ class ProductErrorsRepositoryTest extends TestCase
             )
             ->andReturn("DELETE FROM wp_contextwp_table WHERE locked_until < '2022-04-10 12:57:00'");
 
-        $dbMock->shouldReceive('query')
+        $this->mockStaticMethod(DB::class, '__callStatic')
             ->once()
-            ->with("DELETE FROM wp_contextwp_table WHERE locked_until < '2022-04-10 12:57:00'")
+            ->with('query', ["DELETE FROM wp_contextwp_table WHERE locked_until < '2022-04-10 12:57:00'"])
             ->andReturnNull();
 
         $repository->deleteExpiredErrors();
@@ -67,9 +65,7 @@ class ProductErrorsRepositoryTest extends TestCase
             ->method('getNow')
             ->willReturn('2022-04-10 12:57:00');
 
-        $dbMock = $this->mockStatic(DB::class);
-
-        $dbMock->shouldReceive('prepare')
+        $this->mockStaticMethod(DB::class, 'prepare')
             ->once()
             ->with(
                 "SELECT product_id FROM wp_contextwp_table WHERE permanently_locked = 0 AND locked_until <= %s",
@@ -77,9 +73,12 @@ class ProductErrorsRepositoryTest extends TestCase
             )
             ->andReturn("SELECT product_id FROM wp_contextwp_table WHERE permanently_locked = 0 AND locked_until <= '2022-04-10 12:57:00'");
 
-        $dbMock->shouldReceive('get_col')
+        $this->mockStaticMethod(DB::class, '__callStatic')
             ->once()
-            ->with("SELECT product_id FROM wp_contextwp_table WHERE permanently_locked = 0 AND locked_until <= '2022-04-10 12:57:00'")
+            ->with(
+                'get_col',
+                ["SELECT product_id FROM wp_contextwp_table WHERE permanently_locked = 0 AND locked_until <= '2022-04-10 12:57:00'"]
+            )
             ->andReturn(['id-1', 'id-2']);
 
         $this->assertSame(['id-1', 'id-2'], $repository->getLockedProductIds());

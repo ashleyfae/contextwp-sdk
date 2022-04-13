@@ -13,6 +13,7 @@ use Ashleyfae\WPDB\DB;
 use ContextWP\Database\Tables\Table;
 use ContextWP\Tests\TestCase;
 use Generator;
+use Mockery;
 use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionException;
 use WP_Mock;
@@ -63,24 +64,23 @@ class TableTest extends TestCase
             ->method('getVersion')
             ->willReturn(4567);
 
-        $db = $this->mockStatic(DB::class);
-
-        $db->shouldReceive('applyPrefix')
+        $this->mockStaticMethod(DB::class, 'applyPrefix')
             ->once()
             ->andReturnArg(0);
 
-        $wpdb          = new \stdClass();
+        $wpdb          = Mockery::mock('wpdb');
         $wpdb->charset = 'utf8mb4';
         $wpdb->collate = 'utf8mb4_unicode_520_ci';
-        $db->shouldReceive('getInstance')
+
+        $this->mockStaticMethod(DB::class, 'getInstance')
             ->twice()
             ->andReturn($wpdb);
 
-        $db->shouldReceive('delta')
+        $this->mockStaticMethod(DB::class, 'delta')
             ->with(
                 "CREATE TABLE contextwp_table (schema) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;"
             )
-            ->andReturnNull();
+            ->andReturn([]);
 
         $table->updateOrCreate();
     }
@@ -96,14 +96,12 @@ class TableTest extends TestCase
             ->method('getTableName')
             ->willReturn('contextwp_table');
 
-        $db = $this->mockStatic(DB::class);
-
-        $db->shouldReceive('applyPrefix')
+        $this->mockStaticMethod(DB::class, 'applyPrefix')
             ->with('contextwp_table')
             ->andReturn('wp_contextwp_table');
 
-        $db->shouldReceive('query')
-            ->with('DROP TABLE IF EXISTS wp_contextwp_table')
+        $this->mockStaticMethod(DB::class, '__callStatic')
+            ->with('query', ['DROP TABLE IF EXISTS wp_contextwp_table'])
             ->andReturnNull();
     }
 

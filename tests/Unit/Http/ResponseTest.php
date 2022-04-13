@@ -67,6 +67,35 @@ class ResponseTest extends TestCase
     }
 
     /**
+     * @covers \ContextWP\Http\Response::hasErrors()
+     * @dataProvider providerHasErrors
+     */
+    public function testHasErrors(array $body, bool $expected): void
+    {
+        $response = new Response(200, json_encode($body));
+
+        $this->assertSame($expected, $response->hasErrors());
+    }
+
+    /** @see testHasErrors */
+    public function providerHasErrors(): Generator
+    {
+        yield 'empty body' => [[], false];
+        yield 'has error code' => [['error_code' => 'error'], true];
+        yield 'has errors' => [['errors' => 'error'], true];
+        yield 'has empty rejected' => [['rejected' => []], false];
+        yield 'has rejected' => [['rejected' => 'value'], true];
+    }
+
+    /**
+     * @covers \ContextWP\Http\Response::serviceIsUnavailable()
+     */
+    public function testServiceIsUnavailable(): void
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
      * @covers       \ContextWP\Http\Response::getJson()
      * @dataProvider providerCanGetJson
      * @throws ReflectionException

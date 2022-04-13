@@ -54,13 +54,13 @@ class Response
     /**
      * Determines if we have any errors.
      *
-     * @todo implement
-     *
      * @return bool
      */
     public function hasErrors(): bool
     {
-
+        return $this->jsonExists('error_code') ||
+            $this->jsonExists('errors') ||
+            $this->jsonExists('rejected');
     }
 
     /**
@@ -108,5 +108,10 @@ class Response
     public function jsonKey(string $key, $default = null)
     {
         return $this->getJson()[$key] ?? $default;
+    }
+
+    public function jsonExists(string $key): bool
+    {
+        return array_key_exists($key, $this->getJson());
     }
 }
