@@ -9,13 +9,14 @@
 
 namespace ContextWP\Actions;
 
+use ContextWP\Contracts\Component;
 use ContextWP\Repositories\CheckInScheduleRepository;
 use Exception;
 
 /**
  * Registers and handles the cron event to send check-ins.
  */
-class HandleCronEvent
+class HandleCronEvent implements Component
 {
     const EVENT_HOOK = 'contextwp_checkin';
 
@@ -37,7 +38,7 @@ class HandleCronEvent
      * @since 1.0
      * @internal
      */
-    public function init(): void
+    public function load(): void
     {
         add_action('wp', [$this, 'maybeScheduleEvent']);
         add_action(static::EVENT_HOOK, [$this, 'handleEvent']);

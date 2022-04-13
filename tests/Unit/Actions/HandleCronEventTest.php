@@ -39,7 +39,7 @@ class HandleCronEventTest extends TestCase
     }
 
     /**
-     * @covers \ContextWP\Actions\HandleCronEvent::init()
+     * @covers \ContextWP\Actions\HandleCronEvent::load()
      */
     public function testCanInit(): void
     {
@@ -55,7 +55,7 @@ class HandleCronEventTest extends TestCase
             [$handler, 'handleEvent']
         );
 
-        $handler->init();
+        $handler->load();
 
         $this->assertConditionsMet();
     }

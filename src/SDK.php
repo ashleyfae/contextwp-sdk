@@ -9,6 +9,7 @@
 
 namespace ContextWP;
 
+use ContextWP\Actions\HandleCronEvent;
 use ContextWP\Database\TableManager;
 use ContextWP\Registries\ProductRegistry;
 use ContextWP\ValueObjects\Product;
@@ -30,6 +31,7 @@ class SDK
     /** @var string[] components to initialize and boot */
     protected $components = [
         TableManager::class,
+        HandleCronEvent::class,
     ];
 
     /**
@@ -53,6 +55,8 @@ class SDK
 
     /**
      * Initializes things.
+     *
+     * @since 1.0
      */
     protected function init(): void
     {
@@ -63,6 +67,8 @@ class SDK
     /**
      * Loads the components. This creates a new instance of the class and calls the `load()` method to
      * do any bootstrapping.
+     *
+     * @since 1.0
      */
     protected function loadComponents(): void
     {
@@ -73,6 +79,8 @@ class SDK
 
     /**
      * Retrieves the SDK version.
+     *
+     * @since 1.0
      *
      * @return string
      */
