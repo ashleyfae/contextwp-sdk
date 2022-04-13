@@ -88,11 +88,25 @@ class ResponseTest extends TestCase
     }
 
     /**
-     * @covers \ContextWP\Http\Response::serviceIsUnavailable()
+     * @covers       \ContextWP\Http\Response::serviceIsUnavailable()
+     * @dataProvider providerServiceIsUnavailable
      */
-    public function testServiceIsUnavailable(): void
+    public function testServiceIsUnavailable(int $responseCode, bool $expected): void
     {
-        $this->markTestIncomplete();
+        $this->assertSame(
+            (new Response($responseCode))->serviceIsUnavailable(),
+            $expected
+        );
+    }
+
+    /** @see testServiceIsUnavailable */
+    public function providerServiceIsUnavailable(): Generator
+    {
+        yield '500 is unavailable' => [500, true];
+        yield '503 is unavailable' => [503, true];
+        yield '400 is available' => [400, false];
+        yield '200 is available' => [200, false];
+        yield '600 is available' => [600, false];
     }
 
     /**
