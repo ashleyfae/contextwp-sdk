@@ -78,6 +78,8 @@ class SendCheckIns
 
         $productGroups = $this->productRegistry->getProducts();
 
+        $this->log(sprintf('%d product groups to check in.', count($productGroups)));
+
         try {
             foreach ($productGroups as $publicKey => $products) {
                 $this->log("Sending check-ins for PK: {$publicKey}");
