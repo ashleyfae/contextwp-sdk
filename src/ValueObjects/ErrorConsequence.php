@@ -27,6 +27,15 @@ class ErrorConsequence
     /** @var string|null $responseBody API response body */
     public $responseBody;
 
+    /**
+     * Constructor
+     *
+     * @since 1.0
+     *
+     * @param  string  $productId  ID of the product.
+     * @param  string  $reason  Error reason from the API response.
+     * @param  string|null  $responseBody  Full response body.
+     */
     public function __construct(string $productId, string $reason, ?string $responseBody = null)
     {
         $this->productId    = $productId;
@@ -34,6 +43,14 @@ class ErrorConsequence
         $this->responseBody = $responseBody;
     }
 
+    /**
+     * Determines if the product should be permanently locked. This is only used for errors that are
+     * impossible to recover (without changing the product ID, at least).
+     *
+     * @since 1.0
+     *
+     * @return bool
+     */
     public function isPermanentlyLocked(): bool
     {
         return in_array($this->reason, [
@@ -48,7 +65,7 @@ class ErrorConsequence
                 return null;
 
             default :
-                return '+1 week';
+                return date('Y-m-d H:i:s', strtotime('+2 weeks'));
         }
     }
 }
