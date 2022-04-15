@@ -170,6 +170,7 @@ class SendCheckIns
         }
 
         if (! $response->isOk() || $response->hasErrors()) {
+            $this->log('Handling errors.');
             $this->responseErrorHandler->execute($response, $products);
         }
     }
