@@ -19,7 +19,7 @@ use ReflectionException;
 class SDKTest extends TestCase
 {
     /**
-     * @covers \ContextWP\SDK::init();
+     * @covers \ContextWP\SDK::init()
      * @throws ReflectionException
      */
     public function testCanInit(): void
@@ -30,14 +30,9 @@ class SDKTest extends TestCase
             ->method('loadComponents')
             ->willReturn(null);
 
-        $this->assertNull($this->getInaccessibleProperty($sdk, 'productRegistry')->getValue($sdk));
-
         $this->invokeInaccessibleMethod($sdk, 'init');
 
-        $this->assertInstanceOf(
-            ProductRegistry::class,
-            $this->getInaccessibleProperty($sdk, 'productRegistry')->getValue($sdk)
-        );
+        $this->assertConditionsMet();
     }
 
     /**
@@ -67,7 +62,9 @@ class SDKTest extends TestCase
             ->once()
             ->with($product);
 
-        $this->setInaccessibleProperty($sdk, 'productRegistry', $registry);
+        $this->mockStaticMethod(ProductRegistry::class, 'getInstance')
+            ->once()
+            ->andReturn($registry);
 
         $sdk->register($product);
 

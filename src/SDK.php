@@ -26,9 +26,6 @@ class SDK
     /** @var string Path to the SDK directory. */
     public static $dir;
 
-    /** @var ProductRegistry Contains all registered products. */
-    protected $productRegistry;
-
     /** @var string[] components to initialize and boot */
     protected $components = [
         TableManager::class,
@@ -62,7 +59,6 @@ class SDK
      */
     protected function init(): void
     {
-        $this->productRegistry = new ProductRegistry();
         $this->loadComponents();
     }
 
@@ -101,7 +97,7 @@ class SDK
      */
     public function register(Product $product): SDK
     {
-        $this->productRegistry->add($product);
+        ProductRegistry::getInstance()->add($product);
 
         return $this;
     }
