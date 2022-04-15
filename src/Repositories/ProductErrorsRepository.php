@@ -76,11 +76,15 @@ class ProductErrorsRepository
     }
 
     /**
+     * Builds the database insert strings for each product consequence.
+     *
+     * @since 1.0
+     *
      * @param  ErrorConsequence[]  $productConsequences
      *
-     * @return void
+     * @return array
      */
-    public function lockProducts(array $productConsequences): void
+    protected function makeLockProductStrings(array $productConsequences): array
     {
         $values = [];
 
@@ -94,7 +98,21 @@ class ProductErrorsRepository
             );
         }
 
-        $valueString = implode(', ', $values);
+        return $values;
+    }
+
+    /**
+     * Inserts product locks.
+     *
+     * @since 1.0
+     *
+     * @param  ErrorConsequence[]  $productConsequences
+     *
+     * @return void
+     */
+    public function lockProducts(array $productConsequences): void
+    {
+        $valueString = implode(', ', $this->makeLockProductStrings($productConsequences));
 
         DB::query(
             "INSERT INTO {$this->getTableName()} (product_id, permanently_locked, locked_until, response_body)
