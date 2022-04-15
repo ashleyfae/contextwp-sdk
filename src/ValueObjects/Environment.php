@@ -33,7 +33,7 @@ class Environment implements Arrayable
         return [
             'source_hash' => $this->getSourceHash(),
             'wp_version'  => $this->getBlogValue('version'),
-            'php_version' => phpversion(),
+            'php_version' => phpversion() ?: null,
             'locale'      => $this->getBlogValue('language'),
             'sdk_version' => SDK::getVersion(),
         ];

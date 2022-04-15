@@ -36,12 +36,16 @@ class EnvironmentTest extends TestCase
             ->withConsecutive(['version'], ['language'])
             ->willReturnOnConsecutiveCalls('5.6', 'en_GB');
 
+        $this->mockStaticMethod(SDK::class, 'getVersion')
+            ->once()
+            ->andReturn('1.1');
+
         $this->assertEqualsCanonicalizing([
             'source_hash' => 'hash',
             'wp_version'  => '5.6',
             'php_version' => phpversion(),
             'locale'      => 'en_GB',
-            'sdk_version' => SDK::getVersion(), // @todo mock this
+            'sdk_version' => '1.1',
         ], $environment->toArray());
     }
 
