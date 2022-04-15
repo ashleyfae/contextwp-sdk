@@ -21,6 +21,14 @@ class SendCheckInsCommand implements CliCommand, LogInterface
     protected $sendCheckIns;
 
     /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        $this->sendCheckIns = new SendCheckIns();
+    }
+
+    /**
      * @inheritDoc
      */
     public static function commandName(): string
