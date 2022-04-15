@@ -15,10 +15,13 @@ use ContextWP\Exceptions\NoProductsToCheckInException;
 use ContextWP\Http\Response;
 use ContextWP\Registries\ProductRegistry;
 use ContextWP\Repositories\ProductErrorsRepository;
+use ContextWP\Traits\Loggable;
 use ContextWP\ValueObjects\Product;
 
 class SendCheckIns
 {
+    use Loggable;
+
     /** @var bool $applyProductFilters whether to filter out invalid (failed/rejected) products */
     protected $applyProductFilters = true;
 
@@ -77,6 +80,8 @@ class SendCheckIns
 
         try {
             foreach ($productGroups as $publicKey => $products) {
+                $this->log("Sending check-ins for PK: {$publicKey}");
+
                 try {
                     $this->handleGroupResponse(
                         $this->executeRequestGroup($publicKey, $products),
@@ -155,6 +160,9 @@ class SendCheckIns
      */
     protected function handleGroupResponse(Response $response, array $products)
     {
+        $this->log("Response code: {$response->responseCode}");
+        $this->log("Response body: {$response->responseBody}");
+
         if ($response->serviceIsUnavailable()) {
             throw new ServiceUnavailableException();
         }
