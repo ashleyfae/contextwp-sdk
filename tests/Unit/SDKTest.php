@@ -50,7 +50,6 @@ class SDKTest extends TestCase
 
     /**
      * @covers \ContextWP\SDK::register()
-     * @throws ReflectionException
      */
     public function testCanRegister(): void
     {
