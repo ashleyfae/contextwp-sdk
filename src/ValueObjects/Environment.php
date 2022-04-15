@@ -11,6 +11,7 @@ namespace ContextWP\ValueObjects;
 
 use ContextWP\Contracts\Arrayable;
 use ContextWP\Helpers\SourceHasher;
+use ContextWP\Helpers\Str;
 use ContextWP\SDK;
 use ContextWP\Traits\Makeable;
 use Exception;
@@ -30,13 +31,15 @@ class Environment implements Arrayable
      */
     public function toArray(): array
     {
-        return [
+        return array_map(function ($value) {
+            return Str::maxChars($value, 100);
+        }, [
             'source_hash' => $this->getSourceHash(),
             'wp_version'  => $this->getBlogValue('version'),
             'php_version' => phpversion() ?: null,
             'locale'      => $this->getBlogValue('language'),
             'sdk_version' => SDK::getVersion(),
-        ];
+        ]);
     }
 
     /**

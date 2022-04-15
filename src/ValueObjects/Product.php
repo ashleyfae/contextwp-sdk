@@ -12,6 +12,9 @@ namespace ContextWP\ValueObjects;
 use ContextWP\Contracts\Arrayable;
 use ContextWP\Helpers\Str;
 
+/**
+ * Represents a Product in ContextWP.
+ */
 class Product implements Arrayable
 {
     /** @var string Customer public key */
@@ -24,6 +27,7 @@ class Product implements Arrayable
     protected $version = null;
 
     /**
+     * @param  string  $publicKey  Public key on the customer's account.
      * @param  string  $productId  Product UUID.
      */
     public function __construct(string $publicKey, string $productId)
@@ -34,6 +38,8 @@ class Product implements Arrayable
 
     /**
      * Sets the product version.
+     *
+     * @since 1.0
      *
      * @param  string  $version
      *
@@ -49,13 +55,15 @@ class Product implements Arrayable
     /**
      * Converts the product to what's expected in the API request.
      *
+     * @since 1.0
+     *
      * @return array
      */
     public function toArray(): array
     {
         return [
-            'product_id'      => $this->productId,
-            'product_version' => $this->version,
+            'product_id'      => Str::maxChars($this->productId, 100),
+            'product_version' => is_string($this->version) ? Str::maxChars($this->version, 50) : null,
         ];
     }
 }
