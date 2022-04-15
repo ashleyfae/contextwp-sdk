@@ -9,5 +9,6 @@
 
 namespace ContextWP;
 
-// @todo not in unit tests
-//Loader::instance()->registerSdk('1.0', __DIR__.'/SDK.php');
+if (! defined('CONTEXTWP_TESTS')) {
+    Loader::instance()->registerSdk('1.0', __DIR__.'/SDK.php');
+}

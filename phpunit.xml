@@ -4,6 +4,9 @@
     colors="true"
     failOnWarning="true"
 >
+    <php>
+        <const name="CONTEXTWP_TESTS" value="true"/>
+    </php>
     <testsuites>
         <testsuite name="Unit">
             <directory suffix="Test.php">./tests/Unit</directory>
