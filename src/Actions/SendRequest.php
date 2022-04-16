@@ -52,7 +52,7 @@ class SendRequest
         if (defined('CONTEXTWP_API_URL')) {
             return (string) CONTEXTWP_API_URL;
         } else {
-            return 'https://contextwp.com/api/v1/checkin';
+            return 'https://app.contextwp.com/api/v1/checkin';
         }
     }
 }
