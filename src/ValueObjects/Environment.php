@@ -10,6 +10,7 @@
 namespace ContextWP\ValueObjects;
 
 use ContextWP\Contracts\Arrayable;
+use ContextWP\Helpers\EnvironmentTypeParser;
 use ContextWP\Helpers\SourceHasher;
 use ContextWP\Helpers\Str;
 use ContextWP\SDK;
@@ -38,6 +39,7 @@ class Environment implements Arrayable
             'wp_version'  => $this->getBlogValue('version'),
             'php_version' => phpversion() ?: null,
             'locale'      => $this->getBlogValue('language'),
+            'type'        => $this->getEnvironmentType(),
             'sdk_version' => SDK::getVersion(),
         ]);
     }
@@ -63,5 +65,10 @@ class Environment implements Arrayable
     protected function getBlogValue(string $key): ?string
     {
         return get_bloginfo($key) ?: null;
+    }
+
+    protected function getEnvironmentType(): string
+    {
+        return (new EnvironmentTypeParser())->parse();
     }
 }
