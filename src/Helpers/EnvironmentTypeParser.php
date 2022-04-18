@@ -64,7 +64,7 @@ class EnvironmentTypeParser
     {
         $host = $this->getHost();
         if (! is_string($host)) {
-            return static::Production;
+            return static::Local;
         }
 
         if ($this->isLocalSite($host)) {

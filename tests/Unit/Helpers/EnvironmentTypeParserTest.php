@@ -81,7 +81,7 @@ class EnvironmentTypeParserTest extends TestCase
             'hostValue'     => null,
             'isLocalSite'   => false,
             'isStagingSite' => false,
-            'expected'      => 'production',
+            'expected'      => 'local',
         ];
 
         yield 'local site' => [
