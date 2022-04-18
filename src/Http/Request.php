@@ -10,6 +10,7 @@
 namespace ContextWP\Http;
 
 use ContextWP\Exceptions\MissingPublicKeyException;
+use ContextWP\SDK;
 use ContextWP\Traits\Makeable;
 use ContextWP\ValueObjects\Environment;
 use ContextWP\ValueObjects\Product;
@@ -125,7 +126,7 @@ class Request
      * @since 1.0
      *
      * @return string[]
-     * @throws MissingPublicKeyException
+     * @throws MissingPublicKeyException|Exception
      */
     protected function makeHeaders(): array
     {
@@ -137,7 +138,25 @@ class Request
             'Accept'       => 'application/json',
             'Content-Type' => 'application/json',
             'Public-Key'   => $this->publicKey,
+            'User-Agent'   => $this->getUserAgent(),
         ];
+    }
+
+    /**
+     * Makes the SDK user agent.
+     *
+     * @since 1.0
+     *
+     * @return string
+     * @throws Exception
+     */
+    protected function getUserAgent(): string
+    {
+        return sprintf(
+            'ContextWP/%s; %s',
+            SDK::getVersion(),
+            $this->environment->toArray()['source_hash'] ?? 'unknown'
+        );
     }
 
     /**

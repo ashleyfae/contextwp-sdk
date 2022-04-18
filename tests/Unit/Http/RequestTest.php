@@ -12,6 +12,7 @@ namespace ContextWP\Tests\Unit\Http;
 use ContextWP\Exceptions\MissingPublicKeyException;
 use ContextWP\Http\Request;
 use ContextWP\Http\Response;
+use ContextWP\SDK;
 use ContextWP\Tests\TestCase;
 use ContextWP\ValueObjects\Environment;
 use ContextWP\ValueObjects\Product;
@@ -139,7 +140,10 @@ class RequestTest extends TestCase
      */
     public function testCanMakeHeaders(?string $publicKey, ?string $expectedException = null): void
     {
-        $request = new Request();
+        $request = $this->createPartialMock(Request::class, ['getUserAgent']);
+        $request->expects($publicKey ? $this->once() : $this->never())
+            ->method('getUserAgent')
+            ->willReturn('ContextWP/1.0');
 
         if (! is_null($publicKey)) {
             $this->setInaccessibleProperty($request, 'publicKey', $publicKey);
@@ -154,9 +158,53 @@ class RequestTest extends TestCase
                 'Accept'       => 'application/json',
                 'Content-Type' => 'application/json',
                 'Public-Key'   => $publicKey,
+                'User-Agent'   => 'ContextWP/1.0',
             ],
             $this->invokeInaccessibleMethod($request, 'makeHeaders')
         );
+    }
+
+    /**
+     * @covers       \ContextWP\Http\Request::getUserAgent()
+     * @dataProvider providerCanGetUserAgent
+     */
+    public function testCanGetUserAgent(array $environmentArray, string $expected): void
+    {
+        $request = new Request();
+
+        $this->mockStaticMethod(SDK::class, 'getVersion')
+            ->once()
+            ->andReturn('1.0');
+
+        $environment = Mockery::mock(Environment::class);
+        $environment->expects('toArray')
+            ->once()
+            ->andReturn($environmentArray);
+
+        $request->setEnvironment($environment);
+
+        $this->assertSame(
+            $expected,
+            $this->invokeInaccessibleMethod($request, 'getUserAgent')
+        );
+    }
+
+    /** @see testCanGetUserAgent */
+    public function providerCanGetUserAgent(): Generator
+    {
+        yield 'environment without hash' => [
+            'environmentArray' => [
+                'php_version' => '7.4'
+            ],
+            'expected'         => 'ContextWP/1.0; unknown'
+        ];
+
+        yield 'environment with hash' => [
+            'environmentArray' => [
+                'source_hash' => 'hash'
+            ],
+            'expected'         => 'ContextWP/1.0; hash'
+        ];
     }
 
     /** @see testCanMakeHeaders */
