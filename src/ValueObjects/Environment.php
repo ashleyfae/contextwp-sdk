@@ -67,6 +67,13 @@ class Environment implements Arrayable
         return get_bloginfo($key) ?: null;
     }
 
+    /**
+     * Retrieves this site's environment type.
+     *
+     * @since 1.0
+     *
+     * @return string
+     */
     protected function getEnvironmentType(): string
     {
         return (new EnvironmentTypeParser())->parse();
