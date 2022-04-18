@@ -24,7 +24,7 @@ class EnvironmentTest extends TestCase
     {
         $environment = $this->createPartialMock(
             Environment::class,
-            ['getSourceHash', 'getBlogValue']
+            ['getSourceHash', 'getBlogValue', 'getEnvironmentType']
         );
 
         $environment->expects($this->once())
@@ -36,6 +36,10 @@ class EnvironmentTest extends TestCase
             ->withConsecutive(['version'], ['language'])
             ->willReturnOnConsecutiveCalls('5.6', 'en_GB');
 
+        $environment->expects($this->once())
+            ->method('getEnvironmentType')
+            ->willReturn('local');
+
         $this->mockStaticMethod(SDK::class, 'getVersion')
             ->once()
             ->andReturn('1.1');
@@ -45,6 +49,7 @@ class EnvironmentTest extends TestCase
             'wp_version'  => '5.6',
             'php_version' => phpversion(),
             'locale'      => 'en_GB',
+            'type'        => 'local',
             'sdk_version' => '1.1',
         ], $environment->toArray());
     }
