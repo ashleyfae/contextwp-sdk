@@ -44,7 +44,9 @@ class Loader
      */
     protected function init(): void
     {
-        add_action('after_setup_theme', [$this, 'setAndLoadLatest'], PHP_INT_MAX);
+        if (function_exists('add_action')) {
+            add_action('after_setup_theme', [$this, 'setAndLoadLatest'], PHP_INT_MAX);
+        }
     }
 
     /**
