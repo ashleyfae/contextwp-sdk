@@ -44,14 +44,26 @@ class EnvironmentTest extends TestCase
             ->once()
             ->andReturn('1.1');
 
-        $this->assertEqualsCanonicalizing([
+        WP_Mock::userFunction('is_multisite')
+            ->once()
+            ->andReturn(false);
+
+        $expected = [
             'source_hash' => 'hash',
             'wp_version'  => '5.6',
             'php_version' => phpversion(),
             'locale'      => 'en_GB',
             'type'        => 'local',
+            'multisite'   => false,
             'sdk_version' => '1.1',
-        ], $environment->toArray());
+        ];
+
+        $actual = $environment->toArray();
+
+        ksort($expected);
+        ksort($actual);
+
+        $this->assertSame($expected, $actual);
     }
 
     /**

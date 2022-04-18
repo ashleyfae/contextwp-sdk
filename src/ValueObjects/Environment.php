@@ -32,15 +32,19 @@ class Environment implements Arrayable
      */
     public function toArray(): array
     {
-        return array_map(function ($value) {
+        $stringValues = array_map(function ($value) {
             return Str::maxChars($value, 100);
         }, [
-            'source_hash' => $this->getSourceHash(),
             'wp_version'  => $this->getBlogValue('version'),
             'php_version' => phpversion() ?: null,
             'locale'      => $this->getBlogValue('language'),
             'type'        => $this->getEnvironmentType(),
             'sdk_version' => SDK::getVersion(),
+        ]);
+
+        return array_merge($stringValues, [
+            'source_hash' => Str::maxChars($this->getSourceHash(), 500),
+            'multisite'   => (bool) is_multisite(),
         ]);
     }
 
