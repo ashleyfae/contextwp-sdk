@@ -12,11 +12,12 @@ namespace ContextWP\Tests\Unit\Helpers;
 use ContextWP\Helpers\EnvironmentTypeParser;
 use ContextWP\Tests\TestCase;
 use Generator;
+use WP_Mock;
 
 class EnvironmentTypeParserTest extends TestCase
 {
     /**
-     * @covers \ContextWP\Helpers\EnvironmentTypeParser::parse()
+     * @covers       \ContextWP\Helpers\EnvironmentTypeParser::parse()
      * @dataProvider providerCanParse
      */
     public function testCanParse(?string $wpType, bool $shouldGuessFromDomain, string $expected)
@@ -109,13 +110,11 @@ class EnvironmentTypeParserTest extends TestCase
      * @covers       \ContextWP\Helpers\EnvironmentTypeParser::getHost()
      * @dataProvider providerCanGetHost
      */
-    public function testCanGetHost($hostValue, ?string $expected): void
+    public function testCanGetHost($siteUrl, ?string $expected): void
     {
-        if (is_null($hostValue)) {
-            unset($_SERVER['HTTP_HOST']);
-        } else {
-            $_SERVER['HTTP_HOST'] = $hostValue;
-        }
+        WP_Mock::userFunction('get_site_url')
+            ->once()
+            ->andReturn($siteUrl);
 
         $this->assertSame(
             $expected,
@@ -126,11 +125,11 @@ class EnvironmentTypeParserTest extends TestCase
     /** @see testCanGetHost */
     public function providerCanGetHost(): Generator
     {
-        yield 'not set' => [null, null];
-        yield 'set but not string' => [123, null];
-        yield 'set but is an array' => [['test'], null];
-        yield 'set with subdomain' => ['www.contextwp.com', 'www.contextwp.com'];
-        yield 'set without tld' => ['localhost', 'localhost'];
+        yield 'not set' => ['', null];
+        yield 'set with subdomain' => ['https://www.contextwp.com', 'www.contextwp.com'];
+        yield 'set without tld' => ['http://localhost', 'localhost'];
+        yield 'set with path' => ['https://site.com/path', 'site.com'];
+        yield 'set with IP' => ['192.168.1.1', null];
     }
 
     /**

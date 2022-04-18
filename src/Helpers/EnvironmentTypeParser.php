@@ -85,7 +85,7 @@ class EnvironmentTypeParser
      */
     protected function getHost(): ?string
     {
-        $host = $_SERVER['HTTP_HOST'] ?? null;
+        $host = parse_url(get_site_url())['host'] ?? null;
 
         return is_string($host) ? $host : null;
     }
