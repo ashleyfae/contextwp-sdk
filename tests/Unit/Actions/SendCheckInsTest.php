@@ -12,6 +12,7 @@ namespace ContextWP\Tests\Unit\Actions;
 use ContextWP\Actions\HandleResponseErrors;
 use ContextWP\Actions\SendCheckIns;
 use ContextWP\Actions\SendRequest;
+use ContextWP\Actions\UpdateCheckInSchedule;
 use ContextWP\Exceptions\NoProductsToCheckInException;
 use ContextWP\Exceptions\ServiceUnavailableException;
 use ContextWP\Http\Response;
@@ -70,6 +71,14 @@ class SendCheckInsTest extends TestCase
 
         $sendCheckIns->expects($serviceIsAvailable ? $this->never() : $this->once())
             ->method('handleServiceUnavailable');
+
+        $updateSchedule = Mockery::mock(UpdateCheckInSchedule::class);
+        $updateSchedule->expects('setNextCheckIn')
+            ->times($serviceIsAvailable ? 1 : 0)
+            ->andReturnNull();
+        $this->mockStaticMethod(UpdateCheckInSchedule::class, 'make')
+            ->times($serviceIsAvailable ? 1 : 0)
+            ->andReturn($updateSchedule);
 
         $this->setInaccessibleProperty($sendCheckIns, 'productErrorsRepository', $repository);
         $this->setInaccessibleProperty($sendCheckIns, 'applyProductFilters', $shouldApplyFilters);
