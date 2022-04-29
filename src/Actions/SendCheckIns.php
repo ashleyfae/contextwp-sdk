@@ -96,6 +96,8 @@ class SendCheckIns
                     // @todo Ideally report this somehow :thinking:
                 }
             }
+
+            UpdateCheckInSchedule::make()->setNextCheckIn();
         } catch (ServiceUnavailableException $e) {
             $this->handleServiceUnavailable();
         }
