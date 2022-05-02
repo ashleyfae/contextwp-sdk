@@ -69,10 +69,7 @@ class ProductErrorsRepository
      */
     public function getLockedProductIds(): array
     {
-        return DB::get_col(DB::prepare(
-            "SELECT product_id FROM {$this->getTableName()} WHERE permanently_locked = 0 AND locked_until IS NOT NULL AND locked_until <= %s",
-            $this->getNow()
-        ));
+        return DB::get_col("SELECT product_id FROM {$this->getTableName()}");
     }
 
     /**
