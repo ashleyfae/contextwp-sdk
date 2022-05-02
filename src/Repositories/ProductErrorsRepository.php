@@ -69,10 +69,7 @@ class ProductErrorsRepository
      */
     public function getLockedProductIds(): array
     {
-        return DB::get_col(DB::prepare(
-            "SELECT product_id FROM {$this->getTableName()} WHERE permanently_locked = 0 AND locked_until IS NOT NULL AND locked_until <= %s",
-            $this->getNow()
-        ));
+        return DB::get_col("SELECT product_id FROM {$this->getTableName()}");
     }
 
     /**
@@ -89,13 +86,30 @@ class ProductErrorsRepository
         $values = [];
 
         foreach ($productConsequences as $product) {
-            $values[] = DB::prepare(
-                "(%s, %d, %s, %s)",
-                $product->productId,
-                (int) $product->isPermanentlyLocked(),
-                $product->getLockedUntil(),
-                $product->responseBody
-            );
+            /*
+             * This is dumb, but wpdb::prepare() was converting `null` to an empty string and breaking everything...
+             * So we have two routes here: if there's no lock-date then we use one string with a hard-coded `null`;
+             * if we have a lock date then we build a separate string using `%s` for the date placeholder.
+             * :eyeroll:
+             */
+            if (is_null($product->getLockedUntil())) {
+                $query = "(%s, %d, null, %s)";
+                $args  = [
+                    $product->productId,
+                    (int) $product->isPermanentlyLocked(),
+                    $product->responseBody
+                ];
+            } else {
+                $query = "(%s, %d, %s, %s)";
+                $args  = [
+                    $product->productId,
+                    (int) $product->isPermanentlyLocked(),
+                    $product->getLockedUntil(),
+                    $product->responseBody
+                ];
+            }
+
+            $values[] = DB::prepare($query, ...$args);
         }
 
         return $values;
