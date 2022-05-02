@@ -46,7 +46,8 @@ class ProductErrorsRepositoryTest extends TestCase
 
         $this->mockStaticMethod(DB::class, '__callStatic')
             ->once()
-            ->with('query', ["DELETE FROM wp_contextwp_table WHERE locked_until IS NOT NULL AND locked_until < '2022-04-10 12:57:00'"])
+            ->with('query',
+                ["DELETE FROM wp_contextwp_table WHERE locked_until IS NOT NULL AND locked_until < '2022-04-10 12:57:00'"])
             ->andReturnNull();
 
         $repository->deleteExpiredErrors();
@@ -92,20 +93,36 @@ class ProductErrorsRepositoryTest extends TestCase
         $consequence->reason       = $consequenceReason;
         $consequence->responseBody = $consequenceBody;
 
-        $consequence->expects($this->once())
+        $consequence->expects($this->atLeastOnce())
             ->method('getLockedUntil')
             ->willReturn($consequenceLockedUntil);
 
-        $this->mockStaticMethod(DB::class, 'prepare')
-            ->once()
-            ->with(
+        if (is_null($consequenceLockedUntil)) {
+            $prepareArgs = [
+                "(%s, %d, null, %s)",
+                $consequence->productId,
+                (int) $consequence->isPermanentlyLocked(),
+                $consequence->responseBody
+            ];
+
+            $returnClosure = function ($string, $pid, $isLocked, $response) {
+                return sprintf(
+                    $string,
+                    $pid,
+                    $isLocked,
+                    is_null($response) ? 'null' : $response
+                );
+            };
+        } else {
+            $prepareArgs = [
                 "(%s, %d, %s, %s)",
                 $consequence->productId,
                 (int) $consequence->isPermanentlyLocked(),
                 $consequenceLockedUntil,
                 $consequence->responseBody
-            )
-            ->andReturnUsing(function ($string, $pid, $isLocked, $lockedUntil, $response) {
+            ];
+
+            $returnClosure = function ($string, $pid, $isLocked, $lockedUntil, $response) {
                 return sprintf(
                     $string,
                     $pid,
@@ -113,7 +130,13 @@ class ProductErrorsRepositoryTest extends TestCase
                     is_null($lockedUntil) ? 'null' : $lockedUntil,
                     is_null($response) ? 'null' : $response
                 );
-            });
+            };
+        }
+
+        $this->mockStaticMethod(DB::class, 'prepare')
+            ->once()
+            ->with(...$prepareArgs)
+            ->andReturnUsing($returnClosure);
 
         $this->assertEqualsCanonicalizing(
             $expected,
@@ -150,7 +173,8 @@ class ProductErrorsRepositoryTest extends TestCase
      */
     public function testCanLockProducts(): void
     {
-        $repository   = $this->createPartialMock(ProductErrorsRepository::class, ['makeLockProductStrings', 'getTableName']);
+        $repository   = $this->createPartialMock(ProductErrorsRepository::class,
+            ['makeLockProductStrings', 'getTableName']);
         $consequences = [new ErrorConsequence('pid', ErrorConsequence::ValidationError)];
 
         $repository->expects($this->once())
