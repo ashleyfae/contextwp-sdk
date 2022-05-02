@@ -58,29 +58,17 @@ class ProductErrorsRepositoryTest extends TestCase
      */
     public function testCanGetLockedProductIds(): void
     {
-        $repository = $this->createPartialMock(ProductErrorsRepository::class, ['getNow', 'getTableName']);
+        $repository = $this->createPartialMock(ProductErrorsRepository::class, ['getTableName']);
 
         $repository->expects($this->once())
             ->method('getTableName')
             ->willReturn('wp_contextwp_table');
 
-        $repository->expects($this->once())
-            ->method('getNow')
-            ->willReturn('2022-04-10 12:57:00');
-
-        $this->mockStaticMethod(DB::class, 'prepare')
-            ->once()
-            ->with(
-                "SELECT product_id FROM wp_contextwp_table WHERE permanently_locked = 0 AND locked_until IS NOT NULL AND locked_until <= %s",
-                '2022-04-10 12:57:00'
-            )
-            ->andReturn("SELECT product_id FROM wp_contextwp_table WHERE permanently_locked = 0 AND locked_until IS NOT NULL AND locked_until <= '2022-04-10 12:57:00'");
-
         $this->mockStaticMethod(DB::class, '__callStatic')
             ->once()
             ->with(
                 'get_col',
-                ["SELECT product_id FROM wp_contextwp_table WHERE permanently_locked = 0 AND locked_until IS NOT NULL AND locked_until <= '2022-04-10 12:57:00'"]
+                ["SELECT product_id FROM wp_contextwp_table"]
             )
             ->andReturn(['id-1', 'id-2']);
 
