@@ -175,8 +175,10 @@ class ProductErrorsRepositoryTest extends TestCase
      */
     public function testCanLockProducts(): void
     {
-        $repository   = $this->createPartialMock(ProductErrorsRepository::class,
-            ['makeLockProductStrings', 'getTableName']);
+        $repository   = $this->createPartialMock(
+            ProductErrorsRepository::class,
+            ['makeLockProductStrings', 'getTableName']
+        );
         $consequences = [new ErrorConsequence('pid', ErrorConsequence::ValidationError)];
 
         $repository->expects($this->once())
