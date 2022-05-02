@@ -93,23 +93,23 @@ class ProductErrorsRepository
              * :eyeroll:
              */
             if (is_null($product->getLockedUntil())) {
-                $statement = DB::prepare(
-                    "(%s, %d, null, %s)",
+                $query = "(%s, %d, null, %s)";
+                $args  = [
                     $product->productId,
                     (int) $product->isPermanentlyLocked(),
                     $product->responseBody
-                );
+                ];
             } else {
-                $statement = DB::prepare(
-                    "(%s, %d, %s, %s)",
+                $query = "(%s, %d, %s, %s)";
+                $args  = [
                     $product->productId,
                     (int) $product->isPermanentlyLocked(),
                     $product->getLockedUntil(),
                     $product->responseBody
-                );
+                ];
             }
 
-            $values[] = $statement;
+            $values[] = DB::prepare($query, ...$args);
         }
 
         return $values;
