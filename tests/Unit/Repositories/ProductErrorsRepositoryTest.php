@@ -46,8 +46,10 @@ class ProductErrorsRepositoryTest extends TestCase
 
         $this->mockStaticMethod(DB::class, '__callStatic')
             ->once()
-            ->with('query',
-                ["DELETE FROM wp_contextwp_table WHERE locked_until IS NOT NULL AND locked_until < '2022-04-10 12:57:00'"])
+            ->with(
+                'query',
+                ["DELETE FROM wp_contextwp_table WHERE locked_until IS NOT NULL AND locked_until < '2022-04-10 12:57:00'"]
+            )
             ->andReturnNull();
 
         $repository->deleteExpiredErrors();
