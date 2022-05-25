@@ -30,8 +30,7 @@ class CliProviderTest extends TestCase
             ->willReturn($shouldLoad);
 
         $provider->expects($shouldLoad ? $this->once() : $this->never())
-            ->method('registerCommands')
-            ->willReturn(null);
+            ->method('registerCommands');
 
         $provider->load();
 

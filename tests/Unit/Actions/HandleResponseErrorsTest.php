@@ -40,13 +40,11 @@ class HandleResponseErrorsTest extends TestCase
 
         $handler->expects($sameConsequenceForAll ? $this->once() : $this->never())
             ->method('addConsequenceCodeForAll')
-            ->with($expectedErrorCode, $products)
-            ->willReturn(null);
+            ->with($expectedErrorCode, $products);
 
         $handler->expects($sameConsequenceForAll ? $this->never() : $this->once())
             ->method('addIndividualProductConsequences')
-            ->with($response->jsonKey('rejected'))
-            ->willReturn(null);
+            ->with($response->jsonKey('rejected'));
 
         $handler->execute($response, $products);
     }

@@ -144,8 +144,7 @@ class HandleCronEventTest extends TestCase
             ->willReturn($isLoggingEnabled);
         $handler->expects($logIsExpected ? $this->once() : $this->never())
             ->method('logException')
-            ->with($exceptionThrown)
-            ->willReturn(null);
+            ->with($exceptionThrown);
 
         $this->setInaccessibleProperty($handler, 'sendCheckIns', $sendCheckIns);
 

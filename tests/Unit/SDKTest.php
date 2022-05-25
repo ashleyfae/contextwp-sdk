@@ -27,8 +27,7 @@ class SDKTest extends TestCase
         $sdk = $this->createPartialMock(SDK::class, ['loadComponents']);
 
         $sdk->expects($this->once())
-            ->method('loadComponents')
-            ->willReturn(null);
+            ->method('loadComponents');
 
         $this->invokeInaccessibleMethod($sdk, 'init');
 

@@ -48,8 +48,7 @@ class SourceHasherTest extends TestCase
 
         $hasher->expects($expectsToCreateNew ? $this->once() : $this->never())
             ->method('saveHash')
-            ->with('hash')
-            ->willReturn(null);
+            ->with('hash');
 
         $this->assertSame('hash', $hasher->getHash());
     }
