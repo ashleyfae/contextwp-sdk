@@ -69,8 +69,9 @@ class TableTest extends TestCase
             ->andReturnArg(0);
 
         $wpdb          = Mockery::mock('wpdb');
-        $wpdb->charset = 'utf8mb4';
-        $wpdb->collate = 'utf8mb4_unicode_520_ci';
+        $wpdb->expects('get_charset_collate')
+            ->once()
+            ->andReturn('DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci');
 
         $this->mockStaticMethod(DB::class, 'getInstance')
             ->twice()

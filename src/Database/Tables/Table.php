@@ -37,11 +37,10 @@ abstract class Table implements DatabaseTable
         }
 
         $tableName = DB::applyPrefix($this->getTableName());
-        $charset   = DB::getInstance()->charset;
-        $collate   = DB::getInstance()->collate;
+        $charsetCollate = DB::getInstance()->get_charset_collate();
 
         DB::delta(
-            "CREATE TABLE {$tableName} ({$this->getSchema()}) DEFAULT CHARACTER SET {$charset} COLLATE {$collate};"
+            "CREATE TABLE {$tableName} ({$this->getSchema()}) {$charsetCollate};"
         );
 
         $this->setDbVersion($this->getVersion());
