@@ -86,7 +86,7 @@ class Response
             return $this->responseBodyJson;
         }
 
-        $this->responseBodyJson = json_decode($this->responseBody, true);
+        $this->responseBodyJson = ! empty($this->responseBody) ? json_decode($this->responseBody, true) : [];
 
         if (! is_array($this->responseBodyJson)) {
             $this->responseBodyJson = [];

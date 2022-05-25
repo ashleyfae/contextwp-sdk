@@ -57,8 +57,7 @@ class TableTest extends TestCase
 
         $table->expects($this->once())
             ->method('setDbVersion')
-            ->with(4567)
-            ->willReturn(null);
+            ->with(4567);
 
         $table->expects($this->once())
             ->method('getVersion')

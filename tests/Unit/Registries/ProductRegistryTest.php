@@ -36,8 +36,7 @@ class ProductRegistryTest extends TestCase
         } else {
             $registry->expects($this->once())
                 ->method('validateProduct')
-                ->with($product)
-                ->willReturn(null);
+                ->with($product);
         }
 
         if (! empty($expectedException)) {
