@@ -53,8 +53,25 @@ class HandleCronEvent implements Component
     public function maybeScheduleEvent(): void
     {
         if (! wp_next_scheduled(static::EVENT_HOOK)) {
-            wp_schedule_event(time(), 'daily', static::EVENT_HOOK);
+            wp_schedule_event($this->getEventRunTime(), 'daily', static::EVENT_HOOK);
         }
+    }
+
+    /**
+     * Returns a random timestamp for which the event should be scheduled. This will be a timestamp ranging
+     * anywhere from now to 2 hours from now.
+     *
+     * @since 1.0
+     * @return int
+     */
+    protected function getEventRunTime(): int
+    {
+        $time = time();
+
+        // add a random amount of time to help stagger events so we don't have all sites checking in at once!
+        $numberMinutes = rand(0, 120);
+
+        return $time + ($numberMinutes * 60);
     }
 
     /**
