@@ -109,7 +109,7 @@ class SendCheckIns
      * @since 1.0
      *
      * @param  string  $publicKey
-     * @param  array  $products
+     * @param  Product[]  $products
      *
      * @return Response
      * @throws NoProductsToCheckInException|MissingPublicKeyException
@@ -144,9 +144,9 @@ class SendCheckIns
      *
      * @since 1.0
      *
-     * @param  array  $products
+     * @param  Product[]  $products
      *
-     * @return array
+     * @return Product[]
      */
     protected function filterOutInvalidProducts(array $products): array
     {

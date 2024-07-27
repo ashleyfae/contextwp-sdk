@@ -90,7 +90,7 @@ class Request
      *
      * @since 1.0
      *
-     * @param  array  $products
+     * @param  Product[]  $products
      *
      * @return $this
      */

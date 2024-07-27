@@ -14,6 +14,7 @@ use ContextWP\Http\Request;
 use ContextWP\Http\Response;
 use ContextWP\Traits\Makeable;
 use ContextWP\ValueObjects\Environment;
+use ContextWP\ValueObjects\Product;
 use Exception;
 
 /**
@@ -27,7 +28,7 @@ class SendRequest
      * Sends the check-in request.
      *
      * @param  string  $publicKey
-     * @param  array  $products
+     * @param  Product[]  $products
      *
      * @return Response
      * @throws Exception|MissingPublicKeyException

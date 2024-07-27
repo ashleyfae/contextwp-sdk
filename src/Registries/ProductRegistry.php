@@ -23,7 +23,7 @@ class ProductRegistry
 {
     use Singleton;
 
-    /** @var array All products, grouped by public key */
+    /** @var array<string, Product[]> All products, grouped by public key */
     protected $products = [];
 
     /**
@@ -72,7 +72,7 @@ class ProductRegistry
      *
      * @since 1.0
      *
-     * @return array
+     * @return array<string, Product[]>
      */
     public function getProducts(): array
     {
