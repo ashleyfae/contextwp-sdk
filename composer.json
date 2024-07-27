@@ -1,5 +1,6 @@
 {
     "name": "ashleyfae/contextwp-sdk",
+    "description": "WordPress plugin intetration with ContextWP.",
     "type": "library",
     "license": "MIT",
     "autoload": {

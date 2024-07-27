@@ -1,0 +1,10 @@
+* text=auto
+.github/ export-ignore
+.gitignore export-ignore
+.gitattributes export-ignore
+
+.phpstorm.meta.php export-ignore
+
+# Tests
+tests/ export-ignore
+phpunit.xml export-ignore
