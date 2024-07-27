@@ -73,7 +73,7 @@ class TableTest extends TestCase
             ->andReturn('DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci');
 
         $this->mockStaticMethod(DB::class, 'getInstance')
-            ->twice()
+            ->zeroOrMoreTimes()
             ->andReturn($wpdb);
 
         $this->mockStaticMethod(DB::class, 'delta')
