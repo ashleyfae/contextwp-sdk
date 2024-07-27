@@ -66,12 +66,18 @@ class HandleCronEvent implements Component
      */
     protected function getEventRunTime(): int
     {
-        $time = time();
+        return time() + ($this->getStartTimeNumberMinutesDelay() * 60);
+    }
 
-        // add a random amount of time to help stagger events so we don't have all sites checking in at once!
-        $numberMinutes = rand(0, 120);
-
-        return $time + ($numberMinutes * 60);
+    /**
+     * Gets a random number of minutes by which the start time should be delayed.
+     * This helps stagger event start times so that we don't have all sites checking in at once.
+     *
+     * @return int
+     */
+    protected function getStartTimeNumberMinutesDelay(): int
+    {
+        return rand(0, 120);
     }
 
     /**

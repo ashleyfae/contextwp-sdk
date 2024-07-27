@@ -95,6 +95,36 @@ class HandleCronEventTest extends TestCase
     }
 
     /**
+     * @covers \ContextWP\Actions\HandleCronEvent::getEventRunTime()
+     * @throws \ReflectionException
+     */
+    public function testCanGetEventRunTime(): void
+    {
+        $handler = $this->createPartialMock(HandleCronEvent::class, ['getStartTimeNumberMinutesDelay']);
+        $handler->expects($this->once())
+            ->method('getStartTimeNumberMinutesDelay')
+            ->willReturn(1);
+
+        $this->assertEqualsWithDelta(
+            strtotime('+1 minute'),
+            $this->invokeInaccessibleMethod($handler, 'getEventRunTime'),
+            5
+        );
+    }
+
+    /**
+     * @covers \ContextWP\Actions\HandleCronEvent::getStartTimeNumberMinutesDelay()
+     * @throws \ReflectionException
+     */
+    public function testCanGetStartTimeNumberMinutesDelay(): void
+    {
+        $delay = $this->invokeInaccessibleMethod(new HandleCronEvent(), 'getStartTimeNumberMinutesDelay');
+
+        $this->assertGreaterThanOrEqual(0, $delay);
+        $this->assertLessThanOrEqual(120, $delay);
+    }
+
+    /**
      * @covers       \ContextWP\Actions\HandleCronEvent::needsCheckIn()
      * @dataProvider providerNeedsCheckIn
      */
