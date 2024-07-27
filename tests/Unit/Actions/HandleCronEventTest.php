@@ -66,16 +66,20 @@ class HandleCronEventTest extends TestCase
      */
     public function testMaybeScheduleEvent(bool $hasScheduled): void
     {
-        $handler = new HandleCronEvent();
+        $handler = $this->createPartialMock(HandleCronEvent::class, ['getEventRunTime']);
 
         WP_Mock::userFunction('wp_next_scheduled')
             ->once()
             ->with('contextwp_checkin')
             ->andReturn($hasScheduled);
 
+        $handler->expects($hasScheduled ? $this->never() : $this->once())
+            ->method('getEventRunTime')
+            ->willReturn($runTime = time());
+
         WP_Mock::userFunction('wp_schedule_event')
             ->times($hasScheduled ? 0 : 1)
-            ->with(time(), 'daily', 'contextwp_checkin')
+            ->with($runTime, 'daily', 'contextwp_checkin')
             ->andReturnNull();
 
         $handler->maybeScheduleEvent();
@@ -88,6 +92,36 @@ class HandleCronEventTest extends TestCase
     {
         yield 'has scheduled' => [true];
         yield 'has not scheduled' => [false];
+    }
+
+    /**
+     * @covers \ContextWP\Actions\HandleCronEvent::getEventRunTime()
+     * @throws \ReflectionException
+     */
+    public function testCanGetEventRunTime(): void
+    {
+        $handler = $this->createPartialMock(HandleCronEvent::class, ['getStartTimeNumberMinutesDelay']);
+        $handler->expects($this->once())
+            ->method('getStartTimeNumberMinutesDelay')
+            ->willReturn(1);
+
+        $this->assertEqualsWithDelta(
+            strtotime('+1 minute'),
+            $this->invokeInaccessibleMethod($handler, 'getEventRunTime'),
+            5
+        );
+    }
+
+    /**
+     * @covers \ContextWP\Actions\HandleCronEvent::getStartTimeNumberMinutesDelay()
+     * @throws \ReflectionException
+     */
+    public function testCanGetStartTimeNumberMinutesDelay(): void
+    {
+        $delay = $this->invokeInaccessibleMethod(new HandleCronEvent(), 'getStartTimeNumberMinutesDelay');
+
+        $this->assertGreaterThanOrEqual(0, $delay);
+        $this->assertLessThanOrEqual(120, $delay);
     }
 
     /**
