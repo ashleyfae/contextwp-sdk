@@ -19,7 +19,7 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=7.1",
-        "ashleyfae/wp-db": "dev-main"
+        "ashleyfae/wp-db": "^1.1.0"
     },
     "require-dev": {
         "10up/wp_mock": "0.4.2",
