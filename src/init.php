@@ -10,5 +10,5 @@
 namespace ContextWP;
 
 if (! defined('CONTEXTWP_TESTS') && function_exists('add_action')) {
-    Loader::instance()->registerSdk('1.0', __DIR__.'/SDK.php');
+    Loader::instance()->registerSdk('1.1.0', __DIR__.'/SDK.php');
 }
