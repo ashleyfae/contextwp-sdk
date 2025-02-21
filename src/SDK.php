@@ -21,7 +21,7 @@ class SDK
     protected static $instance;
 
     /** @var string Current version. */
-    protected static $version = '1.0';
+    protected static $version = '1.1.0';
 
     /** @var string Path to the SDK directory. */
     public static $dir;
